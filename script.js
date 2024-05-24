@@ -29,4 +29,29 @@ document.addEventListener("DOMContentLoaded", function() {
         return postElement;
     }
 
+    //Obtaining post details
+    
+    function getPostDetails(postId) {
+        return fetch(`https://hacker-news.firebaseio.com/v0/item/${postId}.json?print=pretty`)
+            .then(response => response.json());
+    }
+
+    //Fetch top stories and populating posts
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(ids => {
+            const top20Ids = ids.slice(0, 20);
+            return Promise.all(top20Ids.map(id => getPostDetails(id)));
+        })
+        .then(posts => {
+            posts.forEach(post => {
+                const postElement = createPostElement(post);
+                postContainer.appendChild(postElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching posts:', error);
+        });
+
 })
